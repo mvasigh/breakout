@@ -5,6 +5,7 @@ const { height, width } = canvas;
 
 // game values
 let gameOver = false;
+let speed = 1.05;
 
 // ball values
 let x = width / 2;
@@ -56,7 +57,8 @@ function draw() {
   } else if (yPos > height - ballRadius) {
     // if paddle is there, bounce the ball as normal
     if (x > paddleX && x < paddleX + paddleWidth) {
-      dy = -dy;
+      dy = -dy * speed;
+      dx = dx * speed;
     } else {
       // if ball hits the bottom wall, end the game
       gameOver = true;
