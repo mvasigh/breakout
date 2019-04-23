@@ -1,6 +1,7 @@
 const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
 
+canvas.style.cursor = 'none';
 const { height, width } = canvas;
 
 // game values
@@ -153,6 +154,7 @@ function draw() {
 
 document.addEventListener('keydown', keyDownHandler, false);
 document.addEventListener('keyup', keyUpHandler, false);
+canvas.addEventListener('mousemove', mouseMoveHandler, false);
 
 function keyDownHandler(e) {
   if (e.key === 'Right' || e.key === 'ArrowRight') {
@@ -168,6 +170,11 @@ function keyUpHandler(e) {
   } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
     leftPressed = false;
   }
+}
+
+function mouseMoveHandler(e) {
+  const { offsetX, offsetY } = e;
+  paddleX = offsetX - (paddleWidth / 2);
 }
 
 draw();
