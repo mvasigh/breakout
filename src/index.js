@@ -6,6 +6,7 @@ const { height, width } = canvas;
 // game values
 let gameOver = false;
 let speed = 1.05;
+let score = 0;
 
 // ball values
 let x = width / 2;
@@ -23,6 +24,61 @@ let paddleX = (width - paddleWidth) / 2;
 let rightPressed = false;
 let leftPressed = false;
 
+// brick values
+let brickRowCount = 3;
+let brickColumnCount = 5;
+const brickWidth = 75;
+const brickHeight = 20;
+const brickPadding = 10;
+let brickOffsetTop = 30;
+let brickOffsetLeft = 30;
+
+let bricks = [];
+for (let c = 0; c < brickColumnCount; c++) {
+  bricks[c] = [];
+  for (let r = 0; r < brickRowCount; r++) {
+    const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+    const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+    bricks[c][r] = { brickX, brickY, broken: false };
+  }
+}
+
+function collisionDetection() {
+  bricks.forEach(c => {
+    c.forEach(b => {
+      const { brickX, brickY, broken } = b;
+      if (broken) return;
+      if (
+        x > brickX && x < brickX + brickWidth &&
+        y > brickY && y < brickY + brickHeight
+      ) {
+        b.broken = true;
+        dy = -dy;
+        score++;
+
+        if (score === brickRowCount * brickColumnCount) {
+          // alert('You win!');
+          document.location.reload();
+        }
+      }
+    })
+  })
+}
+
+function drawBricks() {
+  for (let c = 0; c < brickColumnCount; c++) {
+    for (let r = 0; r < brickRowCount; r++) {
+      const { brickX, brickY, broken } = bricks[c][r]
+      if (broken) continue;
+      ctx.beginPath();
+      ctx.rect(brickX, brickY, brickWidth, brickHeight);
+      ctx.fillStyle = '#0095DD';
+      ctx.fill();
+      ctx.closePath();
+    }
+  }
+}
+
 function drawBall() {
   ctx.beginPath();
   ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
@@ -39,10 +95,21 @@ function drawPaddle() {
   ctx.closePath();
 }
 
+function drawScore() {
+  ctx.font = '16px Arial';
+  ctx.fillStyle = '#0095DD';
+  ctx.fillText(`Score: ${score}`, 8, 20);
+}
+
 function draw() {
   ctx.clearRect(0, 0, width, height);
+  drawBricks();
   drawBall();
   drawPaddle();
+  drawScore();
+
+  // brick collision detection
+  collisionDetection();
 
   // ball collision detection
   const xPos = x + dx;
@@ -77,7 +144,8 @@ function draw() {
   y += dy;
 
   if (gameOver) {
-    alert('Game over');
+    // alert('Game over');
+    // document.location.reload();
     return;
   }
   requestAnimationFrame(draw);
